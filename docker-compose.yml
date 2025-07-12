@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  whaha:
+    image: devlikeapro/waha:latest
+    platform: linux/amd64
+    container_name: whaha
+    ports:
+      - '3000:3000'
+    environment:
+      - API_TOKEN=${WHAHA_TOKEN}
+      - WHATSAPP_STARTUP_MODE=normal
+      - DISABLE_LOGOUT=false
+    volumes:
+      - ./whatsapp-data:/app/data
+
+  api:
+    build: .
+    container_name: blugger-bot-api
+    ports:
+      - '3031:3031'
+    depends_on:
+      - whaha
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
