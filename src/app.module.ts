@@ -8,6 +8,7 @@ import { IaModule } from './ia/ia.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { ConfigModule } from '@nestjs/config';
+import { ScrapingModule } from './scraping/scraping.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
     IaModule,
     ProductsModule,
     OrdersModule,
+    ScrapingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
