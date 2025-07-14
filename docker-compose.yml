@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  mongo:
+    image: mongo:8.0.12-rc0-noble
+    container_name: blugger-mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    # A variável MONGO_URI aqui não é usada e pode ser removida
+
   whaha:
     image: devlikeapro/waha:latest
     platform: linux/amd64
@@ -21,7 +30,13 @@ services:
       - '3031:3031'
     depends_on:
       - whaha
+      - mongo
     env_file:
       - .env
     volumes:
       - .:/usr/src/app
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/bluggerbot  # 👈 Adicionado aqui
+
+volumes:
+  mongo_data:
