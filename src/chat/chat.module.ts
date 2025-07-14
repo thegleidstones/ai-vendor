@@ -1,15 +1,29 @@
 import { Module } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { ChatController } from './chat.controller';
+import { IaService } from 'src/ia/ia.service';
+import { ProductsService } from 'src/products/products.service';
+import { OrdersService } from 'src/orders/orders.service';
 import { IntentsService } from './intents.service';
-import { IaModule } from 'src/ia/ia.module';
-import { ProductsModule } from 'src/products/products.module';
-import { OrdersModule } from 'src/orders/orders.module';
+import { ChatMessageService } from './chat-message.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ChatMessage, ChatMessageSchema } from './schemas/chat-message.schema';
+import { ChatController } from './chat.controller';
 
 @Module({
-  imports: [IaModule, ProductsModule, OrdersModule],
-  providers: [ChatService, IntentsService],
+  imports: [
+    MongooseModule.forFeature([
+      { name: ChatMessage.name, schema: ChatMessageSchema },
+    ]),
+  ],
   controllers: [ChatController],
-  exports: [ChatService, IntentsService],
+  providers: [
+    ChatService,
+    IaService,
+    IntentsService,
+    ChatMessageService,
+    ProductsService,
+    OrdersService,
+  ],
+  exports: [ChatService],
 })
 export class ChatModule {}

@@ -4,6 +4,7 @@ import { OrdersService } from 'src/orders/orders.service';
 import { ProductsService } from 'src/products/products.service';
 import { IntentsService } from './intents.service';
 import { HistoryMessage } from './types/history-message.type';
+import { ChatMessageService } from './chat-message.service';
 
 @Injectable()
 export class ChatService {
@@ -12,6 +13,7 @@ export class ChatService {
     private readonly ia: IaService,
     private readonly products: ProductsService,
     private readonly orders: OrdersService,
+    private readonly chatMessageService: ChatMessageService,
   ) {}
 
   private memoria = new Map<string, HistoryMessage[]>();
@@ -23,7 +25,7 @@ export class ChatService {
   ): Promise<string | undefined> {
     const contexto = await this.analisarContexto(message, phone);
 
-    const { history, mensagemFinal } = this.processarHistorico(
+    const { history, mensagemFinal } = await this.processarHistorico(
       message,
       phone,
       contexto,
@@ -35,11 +37,7 @@ export class ChatService {
     );
 
     if (resposta) {
-      history.push({
-        role: 'model',
-        parts: [{ text: resposta }],
-      });
-      this.memoria.set(phone, history);
+      await this.chatMessageService.salvar(phone, 'model', resposta);
     }
 
     return resposta;
@@ -66,35 +64,40 @@ export class ChatService {
   }
 
   // 2. Recupera ou inicia o histórico e gera a mensagem final com contexto
-  private processarHistorico(
+  private async processarHistorico(
     message: string,
     phone: string,
     contexto: string,
-  ): { history: HistoryMessage[]; mensagemFinal: string } {
-    let history = this.memoria.get(phone);
+  ): Promise<{ history: HistoryMessage[]; mensagemFinal: string }> {
+    const mensagensMongo = await this.chatMessageService.listarHistorico(phone);
+    const history: HistoryMessage[] = [];
 
-    if (!history) {
-      history = [
+    history.push({
+      role: 'user',
+      parts: [
         {
-          role: 'user',
-          parts: [
-            {
-              text:
-                'Você é um atendente virtual de uma loja de roupas. ' +
-                'Responda de forma clara, objetiva e profissional às dúvidas dos clientes. ' +
-                'Caso não tenha certeza da resposta, peça que o cliente entre em contato com um atendente humano.',
-            },
-          ],
+          text:
+            'Você é um atendente virtual de uma loja de roupas. ' +
+            'Responda de forma clara, objetiva e profissional às dúvidas dos clientes. ' +
+            'Caso não tenha certeza da resposta, peça que o cliente entre em contato com um atendente humano.',
         },
+      ],
+    });
+
+    history.push({
+      role: 'model',
+      parts: [
         {
-          role: 'model',
-          parts: [
-            {
-              text: 'Claro, estou à disposição para ajudar com dúvidas sobre produtos, pedidos e entregas.',
-            },
-          ],
+          text: 'Claro, estou à disposição para ajudar com dúvidas sobre produtos, pedidos e entregas.',
         },
-      ];
+      ],
+    });
+
+    for (const msg of mensagensMongo) {
+      history.push({
+        role: msg.role,
+        parts: [{ text: msg.content }],
+      });
     }
 
     const mensagemFinal = contexto
@@ -105,6 +108,8 @@ export class ChatService {
       role: 'user',
       parts: [{ text: mensagemFinal }],
     });
+
+    await this.chatMessageService.salvar(phone, 'user', mensagemFinal);
 
     return { history, mensagemFinal };
   }
