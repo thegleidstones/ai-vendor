@@ -4,10 +4,14 @@
 import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import { ChatService } from 'src/chat/chat.service';
+import { LangchainChatService } from 'src/langchain-chat/langchain-chat.service';
 
 @Injectable()
 export class WhatsappService {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly langchainChatService: LangchainChatService,
+  ) {}
 
   /*
   async onModuleInit() {
@@ -59,7 +63,8 @@ export class WhatsappService {
     }
 
     // Processa a mensagem com IA
-    const resposta = await this.chatService.processMessage(msg, phone);
+    //const resposta = await this.chatService.processMessage(msg, phone);
+    const resposta = await this.langchainChatService.processMessage(msg, phone);
 
     // Envia resposta via WHAHA local
     await this.sendMessage(phone, resposta);
