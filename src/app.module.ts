@@ -9,8 +9,8 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScrapingModule } from './scraping/scraping.module';
-import { VectorModule } from './vector/vector.module';
 import { RagModule } from './rag/rag.module';
+import { LangchainChatModule } from './langchain-chat/langchain-chat.module';
 
 @Module({
   imports: [
@@ -24,8 +24,8 @@ import { RagModule } from './rag/rag.module';
     ProductsModule,
     OrdersModule,
     ScrapingModule,
-    VectorModule,
     RagModule,
+    LangchainChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
