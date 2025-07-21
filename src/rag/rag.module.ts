@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { LangchainService } from './langchain/langchain.service';
 import { EmbeddingService } from './embedding/embedding.service';
 import { QdrantService } from './qdrant/qdrant.service';
 import { RagController } from './rag.controller';
@@ -8,7 +7,8 @@ import { RagService } from './rag.service';
 
 @Module({
   imports: [ScrapingModule],
-  providers: [LangchainService, EmbeddingService, QdrantService, RagService],
+  providers: [EmbeddingService, QdrantService, RagService],
   controllers: [RagController],
+  exports: [QdrantService, EmbeddingService],
 })
 export class RagModule {}
