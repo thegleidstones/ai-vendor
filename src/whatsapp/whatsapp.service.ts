@@ -3,56 +3,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import axios from 'axios';
 import { Injectable } from '@nestjs/common';
-import { ChatService } from 'src/chat/chat.service';
 import { LangchainChatService } from 'src/langchain-chat/langchain-chat.service';
 
 @Injectable()
 export class WhatsappService {
-  constructor(
-    private readonly chatService: ChatService,
-    private readonly langchainChatService: LangchainChatService,
-  ) {}
-
-  /*
-  async onModuleInit() {
-    await this.registerWebhook();
-  }
-
-  private async registerWebhook() {
-    const baseUrl = process.env.WHAHA_BASE_URL;
-    const token = process.env.WHAHA_TOKEN;
-    const webhookUrl = process.env.PUBLIC_WEBHOOK_URL;
-
-    const sessionId = 'default'; // ou 'default-session' se você tiver alterado
-
-    if (!baseUrl || !token || !webhookUrl) {
-      console.warn(
-        '[WHATSAPP] Variáveis de ambiente ausentes. Webhook não registrado.',
-      );
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${baseUrl}/api/${sessionId}/hook`,
-        { url: webhookUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      console.log('[WHATSAPP] Webhook registrado com sucesso:', response.data);
-    } catch (error) {
-      console.error(
-        '[WHATSAPP] Falha ao registrar webhook:',
-        error.response?.data || error.message,
-      );
-    }
-  }
-  */
+  constructor(private readonly langchainChatService: LangchainChatService) {}
 
   async handleIncoming(payload: any) {
     const msg = payload.message?.text;
