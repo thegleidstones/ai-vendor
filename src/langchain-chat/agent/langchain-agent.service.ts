@@ -63,4 +63,31 @@ export class LangchainAgentService {
       return 'Desculpe, algo deu errado ao tentar responder.Por favor tente novamente ou fale com um atendente.';
     }
   }
+
+  /*
+  async buildChainComMemoria(phone: string): Promise<RunnableSequence> {
+    const memory = new BufferMemory({
+      chatHistory: new ChatMessageHistory(phone, this.chatService),
+      returnMessages: true,
+      memoryKey: 'history',
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([
+      ['system', 'Você é um atendente virtual especializado em roupas. Responda de forma simpática, clara e útil.'],
+      new MessagesPlaceholder('history'),
+      ['human', '{input}'],
+    ]);
+
+    return RunnableSequence.from([
+      {
+        input: async (vars: any) => ({
+          input: vars.input,
+          history: await memory.chatHistory.getMessages(),
+        }),
+      },
+      prompt,
+      this.chatModel,
+      new StringOutputParser(),
+    ]);
+  }*/
 }
